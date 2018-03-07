@@ -1,0 +1,39 @@
+以 portal-clent cae7aaf2c396d55fa0bdfc04415e50f2be93ca3a 為例
+
+1. 如何增加一個語系
+ ex: 新增簡體中文版
+ step:
+ (1) git checkout -t -b cae7aaf2c396d55fa0bdfc04415e50f2be93ca3a
+ (2) run command "npm install"
+ (2) copy src/locale/messages.zh.Hant.xlf to src/locale/messages.zh.Hans.xlf, 並翻譯此檔為簡體中文
+ (3) edit package.json and add some scripts that are listed below:
+  "scripts": {
+    ...
+    "start:portal:gb2312": "ng serve --app portal --i18nFile=src/locale/messages.zh.Hans.xlf --i18nFormat=xlf --locale=zh-Hans --missingTranslation=error --port 8110 --aot --proxy-config config/proxy.dev.conf.js",
+    "build:portal:gb2312": "ng build --app portal --i18nFile=src/locale/messages.zh.Hans.xlf --i18nFormat=xlf --locale=zh-Hans --missingTranslation=error --prod --base-href webapps/portal/gb2312 --output-path dist-portal/gb2312",
+    ...
+  },
+ (4) run command "npm run start:portal:gb2312"
+ 
+2. 如何在既有語系中增加descript
+ ex: 在 app.component.html 中加入 "i18n Guide" 的連結
+ step:
+ (1) edit app.component.html
+    <li>
+        <h2>
+          <a target="_blank" rel="noopener" href="https://angular.io/guide/i18n/" i18n="i18n link@@AngularI18n">i18n Guide</a>
+        </h2>
+    </li>
+ (2) edit 所有的 src/locale/messages.*.xlf, 並增加: 
+      <trans-unit id="AngularI18n" datatype="html">
+        <source>i18n Guide</source>
+        <target>i18n 使用指南</target>            ........> 此處需翻譯成對應的語系文字
+        <context-group purpose="location">
+          <context context-type="sourcefile">app-portal/portal.root.component.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <note priority="1" from="description">i18n link</note>
+      </trans-unit>
+   * 在需要做語系翻譯的 html tag 中加入 i18n 的屬性並指定對應 id，格式如：title|description@@id，其中 title & description可幫助我們更好地理解其所代表的意義, 也可省略
+   * <note priority="1" from="description">i18n link</note> 也可省略
+   * <context context-type="linenumber">27</context> 待查
